@@ -6,14 +6,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce.Api.Products.Tests
 {
-    public class ProductsServiceTest
+    public class ProductsServiceTest : IDisposable
     {
+        ProductsDbContext dbContext = new ProductsDbContext(new DbContextOptionsBuilder<ProductsDbContext>().UseInMemoryDatabase(nameof(GetProductReturnsAllProductsTest)).Options);
+        public ProductsServiceTest()
+        {
+            if (dbContext.Products == null)
+                CreateProducts(dbContext);
+        }
+
+
         [Fact]
         public async void GetProductReturnsAllProductsTest()
         {
-            var options = new DbContextOptionsBuilder<ProductsDbContext>().UseInMemoryDatabase(nameof(GetProductReturnsAllProductsTest)).Options;
-            var dbContext = new ProductsDbContext(options);
-            CreateProducts(dbContext);
+
             var productsprofile = new ProductProfile();
             var configuration = new MapperConfiguration(cfg => cfg.AddProfile(productsprofile));
             var mapper = new Mapper(configuration);
@@ -28,9 +34,9 @@ namespace ECommerce.Api.Products.Tests
         [Fact]
         public async void GetProductReturnsProductUsingValidIdTest()
         {
-            var options = new DbContextOptionsBuilder<ProductsDbContext>().UseInMemoryDatabase(nameof(GetProductReturnsAllProductsTest)).Options;
-            var dbContext = new ProductsDbContext(options);
-            CreateProducts(dbContext);
+            //var options = new DbContextOptionsBuilder<ProductsDbContext>().UseInMemoryDatabase(nameof(GetProductReturnsAllProductsTest)).Options;
+            //var dbContext = new ProductsDbContext(options);
+            //CreateProducts(dbContext);
             var productsprofile = new ProductProfile();
             var configuration = new MapperConfiguration(cfg => cfg.AddProfile(productsprofile));
             var mapper = new Mapper(configuration);
@@ -46,9 +52,9 @@ namespace ECommerce.Api.Products.Tests
         [Fact]
         public async void GetProductReturnsProductUsingInvalidValidIdTest()
         {
-            var options = new DbContextOptionsBuilder<ProductsDbContext>().UseInMemoryDatabase(nameof(GetProductReturnsAllProductsTest)).Options;
-            var dbContext = new ProductsDbContext(options);
-            CreateProducts(dbContext);
+            //var options = new DbContextOptionsBuilder<ProductsDbContext>().UseInMemoryDatabase(nameof(GetProductReturnsAllProductsTest)).Options;
+            //var dbContext = new ProductsDbContext(options);
+            //CreateProducts(dbContext);
             var productsprofile = new ProductProfile();
             var configuration = new MapperConfiguration(cfg => cfg.AddProfile(productsprofile));
             var mapper = new Mapper(configuration);
@@ -73,6 +79,11 @@ namespace ECommerce.Api.Products.Tests
                 });
             }
             productsDbContext.SaveChanges();
+        }
+
+        public void Dispose()
+        {
+            dbContext.Dispose();
         }
     }
 }
